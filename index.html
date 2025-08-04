@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Te Amo</title>
+  <title>TE AMO</title>
   <style>
     body {
       margin: 0;
-      background: black;
+      background-color: black;
       overflow: hidden;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Courier New', monospace;
     }
 
     canvas {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
+      z-index: 0;
     }
 
     #center-text {
@@ -25,66 +26,71 @@
       transform: translate(-50%, -50%);
       color: #ff69b4;
       font-size: 3em;
-      text-shadow: 
-        0 0 5px #ff69b4, 
-        0 0 10px #ff69b4, 
-        0 0 20px #ff69b4,
-        0 0 40px #ff69b4;
-      z-index: 1;
       text-align: center;
       white-space: nowrap;
+      text-shadow:
+        0 0 10px #ff69b4,
+        0 0 20px #ff69b4,
+        0 0 40px #ff69b4,
+        0 0 80px #ff69b4;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <div id="center-text">💖✨ MI PEQUEÑITA ✨💖</div>
+  <div id="center-text">💗MI PEQUEÑITA💗</div>
 
   <script>
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    const fontSize = 20;
-    const columns = canvas.width / fontSize;
-    const drops = Array.from({ length: columns }).fill(1);
-    const text = "TE AMO";
+    const fontSize = 24;
+    const columns = Math.floor(width / fontSize);
+    const drops = Array(columns).fill(1);
+    const message = "TE AMO";
 
     function draw() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, width, height);
 
       ctx.font = `${fontSize}px monospace`;
       ctx.fillStyle = "#ff69b4";
       ctx.shadowColor = "#ff69b4";
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 12;
 
       for (let i = 0; i < drops.length; i++) {
-        const char = text[Math.floor(Math.random() * text.length)];
-        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        const text = message;
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        ctx.fillText(text, x, y);
+
+        if (y > height && Math.random() > 0.975) {
           drops[i] = 0;
         }
+
         drops[i]++;
       }
     }
 
-    setInterval(draw, 50);
+    setInterval(draw, 45);
 
-    // Resize canvas if screen changes
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Al tocar la pantalla, añade más gotas de texto
+    window.addEventListener('click', () => {
+      for (let i = 0; i < 30; i++) {
+        const randomColumn = Math.floor(Math.random() * drops.length);
+        drops[randomColumn] = 0;
+      }
     });
 
-    // Añadir más "TE AMO" al tocar
-    window.addEventListener('click', () => {
-      for (let i = 0; i < 20; i++) {
-        drops[Math.floor(Math.random() * drops.length)] = 0;
-      }
+    // Ajuste automático al redimensionar la ventana
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
     });
   </script>
 </body>
