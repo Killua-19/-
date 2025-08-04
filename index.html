@@ -21,7 +21,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3.2rem;
+    font-size: 1.5rem; /* ✅ texto principal más pequeño */
     color: white;
     font-weight: 900;
     text-shadow:
@@ -77,47 +77,16 @@
 
   @keyframes matrix-glow {
     from {
-      opacity: 0.5;
+      opacity: 0.6;
       text-shadow:
         0 0 2px #ff69b4,
-        0 0 4px #ff1493,
-        0 0 6px #ff69b4;
+        0 0 4px #ff1493;
     }
     to {
       opacity: 1;
       text-shadow:
-        0 0 4px #ff69b4,
-        0 0 8px #ff1493,
-        0 0 12px #ff69b4;
-    }
-  }
-
-  #cinnamon-container {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 40px;
-    z-index: 10;
-  }
-
-  .cinnamon-roll {
-    width: 100px;
-    animation: floatSideways 6s ease-in-out infinite;
-    user-select: none;
-  }
-
-  .cinnamon-roll:nth-child(2) {
-    animation-delay: 3s;
-  }
-
-  @keyframes floatSideways {
-    0%, 100% {
-      transform: translateX(0) translateY(0);
-    }
-    50% {
-      transform: translateX(20px) translateY(-10px);
+        0 0 6px #ff69b4,
+        0 0 12px #ff1493;
     }
   }
 </style>
@@ -127,11 +96,6 @@
 <div id="falling-container"></div>
 
 <div id="center-text">💗MI PEQUEÑITA💗</div>
-
-<div id="cinnamon-container">
-  <img class="cinnamon-roll" src="https://media.giphy.com/media/26xBwdIuRJiAiSwHy/giphy.gif" alt="Cinnamon Roll Sticker 1" />
-  <img class="cinnamon-roll" src="https://media.giphy.com/media/3ohs7YsT03y3jGzxCU/giphy.gif" alt="Cinnamon Roll Sticker 2" />
-</div>
 
 <script>
   const container = document.getElementById('falling-container');
@@ -173,7 +137,7 @@
     textos.forEach(obj => {
       obj.y += obj.speed;
       if (obj.y > viewportHeight) {
-        obj.y = -30 - Math.random()*100;
+        obj.y = -30 - Math.random() * 100;
         obj.x = Math.random() * viewportWidth;
         obj.element.style.left = obj.x + 'px';
       }
@@ -193,10 +157,13 @@
     });
   });
 
-  // Efecto al tocar pantalla
+  // ✅ Al tocar la pantalla: aparecen muchos "TE AMO"
   window.addEventListener('click', e => {
     for (let i = 0; i < 20; i++) {
-      crearTexto(e.clientX + Math.random() * 100 - 50, e.clientY + Math.random() * 100 - 50);
+      crearTexto(
+        e.clientX + (Math.random() * 100 - 50),
+        e.clientY + (Math.random() * 100 - 50)
+      );
     }
   });
 </script>
