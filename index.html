@@ -2,29 +2,40 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TE AMO 💗</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIS PATITAS</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       background: black;
+      font-family: Arial, sans-serif;
     }
 
-    .te-amo {
+    h1 {
       position: absolute;
-      font-size: 40px;
-      font-weight: bold;
-      font-family: Arial, sans-serif;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5em;
+      color: white;
+      text-align: center;
+      text-shadow: 0 0 15px white, 0 0 25px white;
+      white-space: nowrap;
+    }
+
+    .teAmo {
+      position: absolute;
       color: hotpink;
+      font-size: 30px;
+      font-weight: bold;
       text-shadow:
-        0 0 5px #ff00ff,
-        0 0 10px #ff00ff,
-        0 0 20px #ff00ff,
-        0 0 40px #ff66cc,
-        0 0 80px #ff66cc;
-      transform: translateZ(0);
+        0 0 5px #ff69b4,
+        0 0 10px #ff69b4,
+        0 0 20px #ff69b4,
+        2px 2px 2px #000;
       animation: caer 5s linear infinite;
+      user-select: none;
     }
 
     @keyframes caer {
@@ -33,67 +44,42 @@
         opacity: 1;
       }
       100% {
-        transform: translateY(110vh) scale(1.2) rotate(360deg);
+        transform: translateY(120vh) scale(1.2) rotate(360deg);
         opacity: 0;
       }
-    }
-
-    #titulo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 30px;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      font-weight: bold;
-      text-shadow: 0 0 20px white, 0 0 40px white;
-      z-index: 10;
     }
   </style>
 </head>
 <body>
+  <h1>🐾MIS PATITAS VELOCES💗💗</h1>
 
-  <div id="titulo">🐾MIS PATITAS VELOCES💗💗</div>
-
-  <audio id="bgmusic" autoplay loop>
-    <source src="assets/mp3.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio HTML5.
-  </audio>
+  <audio id="backgroundMusic" src="assets/I miss you.mp3" autoplay loop></audio>
 
   <script>
-    function crearTexto() {
-      const texto = document.createElement("div");
-      texto.className = "te-amo";
-      texto.innerText = "TE AMO";
-
-      texto.style.left = Math.random() * window.innerWidth + "px";
-      texto.style.fontSize = (30 + Math.random() * 30) + "px";
-      texto.style.animationDuration = (4 + Math.random() * 3) + "s";
-
-      document.body.appendChild(texto);
+    function crearTeAmo(x = Math.random() * window.innerWidth, y = -50) {
+      const teAmo = document.createElement("div");
+      teAmo.className = "teAmo";
+      teAmo.innerText = "TE AMO";
+      teAmo.style.left = `${x}px`;
+      teAmo.style.top = `${y}px`;
+      teAmo.style.fontSize = `${20 + Math.random() * 30}px`;
+      document.body.appendChild(teAmo);
 
       setTimeout(() => {
-        texto.remove();
-      }, 7000);
+        teAmo.remove();
+      }, 5000);
     }
 
-    setInterval(crearTexto, 100);
+    setInterval(() => {
+      for (let i = 0; i < 5; i++) {
+        crearTeAmo();
+      }
+    }, 300);
 
-    // Al tocar la pantalla, salen muchos TE AMO desde el punto tocado
+    // Efecto al tocar la pantalla
     document.addEventListener("click", (e) => {
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => {
-          const texto = document.createElement("div");
-          texto.className = "te-amo";
-          texto.innerText = "TE AMO";
-          texto.style.left = (e.clientX - 20 + Math.random() * 40) + "px";
-          texto.style.top = (e.clientY - 20 + Math.random() * 40) + "px";
-          texto.style.fontSize = (30 + Math.random() * 30) + "px";
-          texto.style.animationDuration = (3 + Math.random() * 2) + "s";
-          document.body.appendChild(texto);
-          setTimeout(() => texto.remove(), 7000);
-        }, i * 100);
+      for (let i = 0; i < 10; i++) {
+        crearTeAmo(e.clientX + Math.random() * 100 - 50, e.clientY);
       }
     });
   </script>
