@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MIS PATITAS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💗MI PEQUEÑITA💗</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       background: black;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
     }
 
     h1 {
@@ -17,69 +17,71 @@
       top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2.5em;
       color: white;
-      text-align: center;
-      text-shadow: 0 0 15px white, 0 0 25px white;
+      font-size: 3em;
+      font-weight: bold;
+      text-shadow: 0 0 10px white, 0 0 20px white;
       white-space: nowrap;
+      z-index: 10;
     }
 
-    .teAmo {
+    .teamo {
       position: absolute;
       color: hotpink;
-      font-size: 30px;
+      font-size: 2.5em;
       font-weight: bold;
+      pointer-events: none;
       text-shadow:
-        0 0 5px #ff69b4,
-        0 0 10px #ff69b4,
-        0 0 20px #ff69b4,
-        2px 2px 2px #000;
-      animation: caer 5s linear infinite;
-      user-select: none;
+        0 0 5px hotpink,
+        0 0 10px hotpink,
+        0 0 20px hotpink,
+        2px 2px 4px rgba(255, 105, 180, 0.7),
+        4px 4px 8px rgba(255, 105, 180, 0.5);
+      transform: translateZ(0);
+      animation: fall 5s linear infinite;
     }
 
-    @keyframes caer {
+    @keyframes fall {
       0% {
-        transform: translateY(-100px) scale(1) rotate(0deg);
+        transform: translateY(-10%) scale(1) rotate(0deg);
         opacity: 1;
       }
       100% {
-        transform: translateY(120vh) scale(1.2) rotate(360deg);
+        transform: translateY(110vh) scale(0.8) rotate(360deg);
         opacity: 0;
       }
     }
   </style>
 </head>
 <body>
-  <h1>🐾MIS PATITAS VELOCES💗💗</h1>
-
-  <audio id="backgroundMusic" src="assets/I miss you.mp3" autoplay loop></audio>
+  <h1>💗MI PEQUEÑITA💗</h1>
+  <audio id="bgMusic" src="assets/I miss you.mp3" autoplay loop></audio>
 
   <script>
+    const cantidad = 60;
+
     function crearTeAmo(x = Math.random() * window.innerWidth, y = -50) {
-      const teAmo = document.createElement("div");
-      teAmo.className = "teAmo";
-      teAmo.innerText = "TE AMO";
-      teAmo.style.left = `${x}px`;
-      teAmo.style.top = `${y}px`;
-      teAmo.style.fontSize = `${20 + Math.random() * 30}px`;
-      document.body.appendChild(teAmo);
+      const span = document.createElement("span");
+      span.className = "teamo";
+      span.style.left = `${x}px`;
+      span.style.top = `${y}px`;
+      span.textContent = "TE AMO";
+      document.body.appendChild(span);
 
       setTimeout(() => {
-        teAmo.remove();
-      }, 5000);
+        span.remove();
+      }, 6000);
     }
 
-    setInterval(() => {
-      for (let i = 0; i < 5; i++) {
-        crearTeAmo();
-      }
-    }, 300);
+    for (let i = 0; i < cantidad; i++) {
+      setTimeout(() => {
+        setInterval(() => crearTeAmo(), 300);
+      }, i * 100);
+    }
 
-    // Efecto al tocar la pantalla
     document.addEventListener("click", (e) => {
       for (let i = 0; i < 10; i++) {
-        crearTeAmo(e.clientX + Math.random() * 100 - 50, e.clientY);
+        setTimeout(() => crearTeAmo(e.clientX, e.clientY), i * 100);
       }
     });
   </script>
