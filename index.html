@@ -1,89 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💗MI PEQUEÑITA💗</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: black;
-      font-family: 'Arial', sans-serif;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>💗MI PEQUEÑITA💗</title>
+<style>
+  /* Fondo negro y que no haya scroll */
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    background-color: #000;
+    font-family: 'Arial Black', Arial, sans-serif;
+    color: white;
+    position: relative;
+  }
 
-    h1 {
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 3em;
-      font-weight: bold;
-      text-shadow: 0 0 10px white, 0 0 20px white;
-      white-space: nowrap;
-      z-index: 10;
-    }
+  /* Texto central */
+  #center-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4.5rem;
+    color: white;
+    font-weight: 900;
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #ff69b4,
+      0 0 30px #ff1493,
+      0 0 40px #ff1493,
+      0 0 50px #ff69b4,
+      0 0 60px #ff1493,
+      0 0 70px #ff69b4;
+    user-select: none;
+    white-space: nowrap;
+    z-index: 10;
+  }
 
-    .teamo {
-      position: absolute;
-      color: hotpink;
-      font-size: 2.5em;
-      font-weight: bold;
-      pointer-events: none;
-      text-shadow:
-        0 0 5px hotpink,
-        0 0 10px hotpink,
-        0 0 20px hotpink,
-        2px 2px 4px rgba(255, 105, 180, 0.7),
-        4px 4px 8px rgba(255, 105, 180, 0.5);
-      transform: translateZ(0);
-      animation: fall 5s linear infinite;
-    }
+  /* Contenedor para los textos TE AMO */
+  #falling-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: hidden;
+    top: 0; left: 0;
+    z-index: 5;
+  }
 
-    @keyframes fall {
-      0% {
-        transform: translateY(-10%) scale(1) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(110vh) scale(0.8) rotate(360deg);
-        opacity: 0;
-      }
+  /* Estilo general para cada "TE AMO" */
+  .teamo {
+    position: absolute;
+    color: #ff1493; /* rosa neón */
+    font-weight: 900;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    text-shadow:
+      0 0 5px #ff69b4,
+      0 0 10px #ff1493,
+      0 0 15px #ff69b4,
+      0 0 20px #ff1493;
+    user-select: none;
+    white-space: nowrap;
+
+    /* Para dar efecto 3D/reflejo: duplicado espejo */
+  }
+
+  /* Reflejo 3D duplicado (usamos ::after) */
+  .teamo::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    transform: scaleY(-1);
+    color: #ff69b4;
+    opacity: 0.25;
+    filter: blur(1px);
+    text-shadow: none;
+  }
+
+  /* Imagen cinnamon roll abajo con animación */
+  #cinnamon-roll {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    animation: floatSideways 6s ease-in-out infinite;
+    user-select: none;
+    z-index: 10;
+  }
+
+  @keyframes floatSideways {
+    0%, 100% {
+      transform: translateX(-50%) translateY(0);
     }
-  </style>
+    50% {
+      transform: translateX(calc(-50% + 20px)) translateY(-10px);
+    }
+  }
+</style>
 </head>
 <body>
-  <h1>💗MI PEQUEÑITA💗</h1>
-  <audio id="bgMusic" src="assets/I miss you.mp3" autoplay loop></audio>
 
-  <script>
-    const cantidad = 60;
+<div id="falling-container"></div>
 
-    function crearTeAmo(x = Math.random() * window.innerWidth, y = -50) {
-      const span = document.createElement("span");
-      span.className = "teamo";
-      span.style.left = `${x}px`;
-      span.style.top = `${y}px`;
-      span.textContent = "TE AMO";
-      document.body.appendChild(span);
+<div id="center-text">💗MI PEQUEÑITA💗</div>
 
-      setTimeout(() => {
-        span.remove();
-      }, 6000);
-    }
+<img id="cinnamon-roll" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Cinnamon_roll_Icon.png/240px-Cinnamon_roll_Icon.png" alt="Cinnamon Roll" />
 
-    for (let i = 0; i < cantidad; i++) {
-      setTimeout(() => {
-        setInterval(() => crearTeAmo(), 300);
-      }, i * 100);
-    }
+<script>
+  const container = document.getElementById('falling-container');
+  const textos = [];
+  const cantidad = 50;  // cantidad de textos "TE AMO" cayendo
 
-    document.addEventListener("click", (e) => {
-      for (let i = 0; i < 10; i++) {
-        setTimeout(() => crearTeAmo(e.clientX, e.clientY), i * 100);
-      }
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Crear objetos texto y colocarlos aleatoriamente arriba de la pantalla
+  for(let i=0; i<cantidad; i++) {
+    const span = document.createElement('span');
+    span.classList.add('teamo');
+    span.setAttribute('data-text', 'TE AMO');
+    span.textContent = 'TE AMO';
+    
+    // Posición horizontal aleatoria
+    span.style.left = Math.random() * viewportWidth + 'px';
+    // Posición vertical inicial aleatoria fuera de la pantalla arriba
+    span.style.top = (Math.random() * -viewportHeight) + 'px';
+
+    // Tamaño aleatorio para dar profundidad (efecto 3D)
+    const size = 1.2 + Math.random() * 1.8;
+    span.style.fontSize = (size * 1.8) + 'rem';
+
+    // Velocidad diferente según tamaño (más grande cae más lento)
+    const speed = 0.5 + (2 - size) * 1.5;
+
+    container.appendChild(span);
+
+    textos.push({
+      element: span,
+      speed: speed,
+      size: size,
+      x: parseFloat(span.style.left),
+      y: parseFloat(span.style.top),
     });
-  </script>
+  }
+
+  // Animar caída y loop infinito
+  function animar() {
+    textos.forEach(obj => {
+      obj.y += obj.speed;
+      if (obj.y > viewportHeight) {
+        obj.y = -30 - Math.random()*100; // vuelve a arriba
+        obj.x = Math.random() * viewportWidth;
+        obj.element.style.left = obj.x + 'px';
+      }
+      obj.element.style.top = obj.y + 'px';
+    });
+    requestAnimationFrame(animar);
+  }
+  animar();
+
+  // Actualizar tamaño del viewport al cambiar ventana
+  window.addEventListener('resize', () => {
+    textos.forEach(obj => {
+      obj.x = Math.random() * window.innerWidth;
+      obj.element.style.left = obj.x + 'px';
+    });
+  });
+</script>
+
 </body>
 </html>
