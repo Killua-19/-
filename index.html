@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TE AMO 💗</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    .te-amo {
+      position: absolute;
+      font-size: 40px;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+      color: hotpink;
+      text-shadow:
+        0 0 5px #ff00ff,
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        0 0 40px #ff66cc,
+        0 0 80px #ff66cc;
+      transform: translateZ(0);
+      animation: caer 5s linear infinite;
+    }
+
+    @keyframes caer {
+      0% {
+        transform: translateY(-100px) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) scale(1.2) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #titulo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 30px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-weight: bold;
+      text-shadow: 0 0 20px white, 0 0 40px white;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="titulo">🐾MIS PATITAS VELOCES💗💗</div>
+
+  <audio id="bgmusic" autoplay loop>
+    <source src="assets/mp3.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <script>
+    function crearTexto() {
+      const texto = document.createElement("div");
+      texto.className = "te-amo";
+      texto.innerText = "TE AMO";
+
+      texto.style.left = Math.random() * window.innerWidth + "px";
+      texto.style.fontSize = (30 + Math.random() * 30) + "px";
+      texto.style.animationDuration = (4 + Math.random() * 3) + "s";
+
+      document.body.appendChild(texto);
+
+      setTimeout(() => {
+        texto.remove();
+      }, 7000);
+    }
+
+    setInterval(crearTexto, 100);
+
+    // Al tocar la pantalla, salen muchos TE AMO desde el punto tocado
+    document.addEventListener("click", (e) => {
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const texto = document.createElement("div");
+          texto.className = "te-amo";
+          texto.innerText = "TE AMO";
+          texto.style.left = (e.clientX - 20 + Math.random() * 40) + "px";
+          texto.style.top = (e.clientY - 20 + Math.random() * 40) + "px";
+          texto.style.fontSize = (30 + Math.random() * 30) + "px";
+          texto.style.animationDuration = (3 + Math.random() * 2) + "s";
+          document.body.appendChild(texto);
+          setTimeout(() => texto.remove(), 7000);
+        }, i * 100);
+      }
+    });
+  </script>
+</body>
+</html>
