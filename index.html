@@ -1,130 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>💗MI PEQUEÑITA💗</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background: black;
-    height: 100%;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💗Mi Pequeñita💗</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+    }
 
-  #center-text {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    color: white;
-    font-weight: bold;
-    text-shadow:
-      0 0 10px #fff,
-      0 0 20px #ff69b4,
-      0 0 30px #ff1493,
-      0 0 40px #ff1493,
-      0 0 50px #ff69b4,
-      0 0 60px #ff1493,
-      0 0 70px #ff69b4;
-    z-index: 10;
-    pointer-events: none;
-  }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      z-index: 1;
+    }
 
-  canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    z-index: 1;
-  }
-</style>
+    #center-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.6rem; /* pequeño */
+      font-weight: bold;
+      color: #fff;
+      text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #ff69b4,
+        0 0 15px #ff69b4,
+        0 0 20px #ff1493,
+        0 0 25px #ff1493,
+        0 0 30px #ff69b4,
+        0 0 35px #ff1493;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
+  <canvas id="canvas"></canvas>
+  <div id="center-text">💗Mi Pequeñita💗</div>
 
-<canvas id="canvas"></canvas>
-<div id="center-text">💗MI PEQUEÑITA💗</div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-<script>
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-  let width = canvas.width = window.innerWidth;
-  let height = canvas.height = window.innerHeight;
+    const fontSize = 20;
+    const columns = Math.floor(width / fontSize);
+    const drops = Array(columns).fill(0);
 
-  const fontSize = 18;
-  const columns = Math.floor(width / fontSize);
-  const drops = Array(columns).fill(0);
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+      ctx.fillRect(0, 0, width, height);
 
-  const chars = Array(columns).fill("TE AMO");
-
-  function draw() {
-    // Fondo semitransparente para efecto de desvanecimiento
-    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.font = fontSize + "px 'Arial Black'";
-    for (let i = 0; i < drops.length; i++) {
-      const text = "TE AMO";
-      const x = i * fontSize;
-      const y = drops[i] * fontSize;
-
-      const opacity = Math.random() * 0.7 + 0.3;
-      const scale = Math.random() * 0.3 + 1;
-
-      ctx.fillStyle = `rgba(255, 105, 180, ${opacity})`;
-      ctx.shadowColor = '#ff1493';
+      ctx.font = fontSize + "px 'Arial Black'";
+      ctx.shadowColor = "#ff69b4";
       ctx.shadowBlur = 10;
 
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(scale, 1);
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-      // Reflejo invertido como "rastro"
-      ctx.save();
-      ctx.translate(x, y + fontSize);
-      ctx.scale(scale, -1);
-      ctx.globalAlpha = 0.2;
-      ctx.fillText(text, 0, 0);
-      ctx.restore();
+        const text = "TE AMO";
 
-      // Rastro extra tipo Matrix
-      for (let j = 1; j < 5; j++) {
+        // Color y opacidad aleatoria para efecto Matrix
+        const opacity = Math.random() * 0.5 + 0.5;
+        ctx.fillStyle = `rgba(255, 105, 180, ${opacity})`;
+
+        // Texto principal
         ctx.save();
-        ctx.translate(x, y - j * fontSize);
-        ctx.globalAlpha = (0.1 * (5 - j));
-        ctx.fillStyle = '#ff69b4';
+        ctx.translate(x, y);
+        ctx.scale(1, 1);
         ctx.fillText(text, 0, 0);
         ctx.restore();
-      }
 
-      drops[i] += Math.floor(Math.random() * 2) + 1;
+        // Rastro hacia arriba (desvanecimiento estilo Matrix)
+        for (let j = 1; j < 5; j++) {
+          ctx.save();
+          ctx.translate(x, y - j * fontSize);
+          ctx.globalAlpha = 0.1 * (5 - j);
+          ctx.fillStyle = "#ff69b4";
+          ctx.fillText(text, 0, 0);
+          ctx.restore();
+        }
 
-      if (y > height && Math.random() > 0.975) {
-        drops[i] = 0;
+        // Reflejo 3D invertido abajo
+        ctx.save();
+        ctx.translate(x, y + fontSize);
+        ctx.scale(1, -1);
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = "#ff69b4";
+        ctx.filter = "blur(1px)";
+        ctx.fillText(text, 0, 0);
+        ctx.restore();
+
+        // Velocidad rápida
+        drops[i] += Math.floor(Math.random() * 2) + 2;
+
+        // Reinicio de columna
+        if (y > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
       }
     }
-  }
 
-  setInterval(draw, 33);
+    setInterval(draw, 30); // Más velocidad
 
-  window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-  });
+    window.addEventListener("resize", () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
 
-  // Efecto al tocar: muchos "TE AMO" en la zona tocada
-  window.addEventListener('click', e => {
-    for (let i = 0; i < 20; i++) {
-      const x = Math.floor((e.clientX + (Math.random() * 100 - 50)) / fontSize);
-      drops[x] = 0;
-    }
-  });
-</script>
-
+    // Al tocar la pantalla, agregar más columnas activas
+    window.addEventListener("click", (e) => {
+      const newColumns = 10;
+      for (let i = 0; i < newColumns; i++) {
+        const x = Math.floor((e.clientX + (Math.random() * 100 - 50)) / fontSize);
+        if (x >= 0 && x < columns) {
+          drops[x] = 0;
+        }
+      }
+    });
+  </script>
 </body>
 </html>
