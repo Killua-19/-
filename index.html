@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>💗MI PEQUEÑITA💗</title>
 <style>
-  /* Fondo negro y que no haya scroll */
   body, html {
     margin: 0;
     padding: 0;
@@ -17,13 +16,12 @@
     position: relative;
   }
 
-  /* Texto central */
   #center-text {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 4.5rem;
+    font-size: 3.2rem; /* más pequeño que antes */
     color: white;
     font-weight: 900;
     text-shadow:
@@ -39,7 +37,6 @@
     z-index: 10;
   }
 
-  /* Contenedor para los textos TE AMO */
   #falling-container {
     position: fixed;
     width: 100vw;
@@ -50,10 +47,9 @@
     z-index: 5;
   }
 
-  /* Estilo general para cada "TE AMO" */
   .teamo {
     position: absolute;
-    color: #ff1493; /* rosa neón */
+    color: #ff1493;
     font-weight: 900;
     font-size: 1.8rem;
     text-transform: uppercase;
@@ -64,11 +60,8 @@
       0 0 20px #ff1493;
     user-select: none;
     white-space: nowrap;
-
-    /* Para dar efecto 3D/reflejo: duplicado espejo */
   }
 
-  /* Reflejo 3D duplicado (usamos ::after) */
   .teamo::after {
     content: attr(data-text);
     position: absolute;
@@ -81,24 +74,35 @@
     text-shadow: none;
   }
 
-  /* Imagen cinnamon roll abajo con animación */
-  #cinnamon-roll {
+  /* Contenedor para cinnamon rolls */
+  #cinnamon-container {
     position: fixed;
-    bottom: 20px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
-    width: 120px;
+    display: flex;
+    gap: 40px;
+    z-index: 10;
+  }
+
+  /* Cada cinnamon roll (sticker/gif) */
+  .cinnamon-roll {
+    width: 100px;
     animation: floatSideways 6s ease-in-out infinite;
     user-select: none;
-    z-index: 10;
+  }
+
+  /* Para que los dos stickers animen con un delay diferente */
+  .cinnamon-roll:nth-child(2) {
+    animation-delay: 3s;
   }
 
   @keyframes floatSideways {
     0%, 100% {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(0) translateY(0);
     }
     50% {
-      transform: translateX(calc(-50% + 20px)) translateY(-10px);
+      transform: translateX(20px) translateY(-10px);
     }
   }
 </style>
@@ -109,33 +113,30 @@
 
 <div id="center-text">💗MI PEQUEÑITA💗</div>
 
-<img id="cinnamon-roll" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Cinnamon_roll_Icon.png/240px-Cinnamon_roll_Icon.png" alt="Cinnamon Roll" />
+<div id="cinnamon-container">
+  <img class="cinnamon-roll" src="https://media.giphy.com/media/26xBwdIuRJiAiSwHy/giphy.gif" alt="Cinnamon Roll Sticker 1" />
+  <img class="cinnamon-roll" src="https://media.giphy.com/media/3ohs7YsT03y3jGzxCU/giphy.gif" alt="Cinnamon Roll Sticker 2" />
+</div>
 
 <script>
   const container = document.getElementById('falling-container');
   const textos = [];
-  const cantidad = 50;  // cantidad de textos "TE AMO" cayendo
+  const cantidad = 50;
 
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
 
-  // Crear objetos texto y colocarlos aleatoriamente arriba de la pantalla
   for(let i=0; i<cantidad; i++) {
     const span = document.createElement('span');
     span.classList.add('teamo');
     span.setAttribute('data-text', 'TE AMO');
     span.textContent = 'TE AMO';
-    
-    // Posición horizontal aleatoria
     span.style.left = Math.random() * viewportWidth + 'px';
-    // Posición vertical inicial aleatoria fuera de la pantalla arriba
     span.style.top = (Math.random() * -viewportHeight) + 'px';
 
-    // Tamaño aleatorio para dar profundidad (efecto 3D)
     const size = 1.2 + Math.random() * 1.8;
     span.style.fontSize = (size * 1.8) + 'rem';
 
-    // Velocidad diferente según tamaño (más grande cae más lento)
     const speed = 0.5 + (2 - size) * 1.5;
 
     container.appendChild(span);
@@ -149,12 +150,11 @@
     });
   }
 
-  // Animar caída y loop infinito
   function animar() {
     textos.forEach(obj => {
       obj.y += obj.speed;
       if (obj.y > viewportHeight) {
-        obj.y = -30 - Math.random()*100; // vuelve a arriba
+        obj.y = -30 - Math.random()*100;
         obj.x = Math.random() * viewportWidth;
         obj.element.style.left = obj.x + 'px';
       }
@@ -164,7 +164,6 @@
   }
   animar();
 
-  // Actualizar tamaño del viewport al cambiar ventana
   window.addEventListener('resize', () => {
     textos.forEach(obj => {
       obj.x = Math.random() * window.innerWidth;
