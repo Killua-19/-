@@ -2,133 +2,143 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>💗Mi Pequeñita💗</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Te Amo</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
       overflow: hidden;
+      background: black;
       height: 100%;
     }
 
     canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
       display: block;
-      z-index: 1;
     }
 
-    #center-text {
-      position: fixed;
+    .center-text {
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 1.6rem; /* pequeño */
+      font-size: 2em;
+      color: white;
+      text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
       font-weight: bold;
-      color: #fff;
-      text-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #ff69b4,
-        0 0 15px #ff69b4,
-        0 0 20px #ff1493,
-        0 0 25px #ff1493,
-        0 0 30px #ff69b4,
-        0 0 35px #ff1493;
-      pointer-events: none;
-      white-space: nowrap;
+      font-family: sans-serif;
       z-index: 10;
     }
   </style>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
-  <div id="center-text">💗Mi Pequeñita💗</div>
+  <div class="center-text">💗Mi Pequeñita💗</div>
+  <canvas id="matrix"></canvas>
 
   <script>
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    // Ajustar tamaño del canvas
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    const fontSize = 20;
-    const columns = Math.floor(width / fontSize);
-    const drops = Array(columns).fill(0);
+    const letters = Array(300).fill("TE AMO");
+    const fontSize = 18;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).map(() => Math.random() * canvas.height);
 
     function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = fontSize + "px 'Arial Black'";
-      ctx.shadowColor = "#ff69b4";
-      ctx.shadowBlur = 10;
+      ctx.font = fontSize + "px sans-serif";
 
       for (let i = 0; i < drops.length; i++) {
+        const text = "TE AMO";
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        const text = "TE AMO";
+        const brightness = Math.random() * 1.2 + 0.3;
+        const size = Math.random() * 20 + 10;
 
-        // Color y opacidad aleatoria para efecto Matrix
-        const opacity = Math.random() * 0.5 + 0.5;
-        ctx.fillStyle = `rgba(255, 105, 180, ${opacity})`;
+        ctx.fillStyle = `rgba(255, 105, 180, ${brightness})`;
+        ctx.font = `${size}px sans-serif`;
+        ctx.fillText(text, x, y);
 
-        // Texto principal
+        // Reflejo invertido
         ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(1, 1);
-        ctx.fillText(text, 0, 0);
-        ctx.restore();
-
-        // Rastro hacia arriba (desvanecimiento estilo Matrix)
-        for (let j = 1; j < 5; j++) {
-          ctx.save();
-          ctx.translate(x, y - j * fontSize);
-          ctx.globalAlpha = 0.1 * (5 - j);
-          ctx.fillStyle = "#ff69b4";
-          ctx.fillText(text, 0, 0);
-          ctx.restore();
-        }
-
-        // Reflejo 3D invertido abajo
-        ctx.save();
-        ctx.translate(x, y + fontSize);
+        ctx.translate(x, y + size * 2);
         ctx.scale(1, -1);
-        ctx.globalAlpha = 0.25;
-        ctx.fillStyle = "#ff69b4";
-        ctx.filter = "blur(1px)";
+        ctx.fillStyle = `rgba(255, 105, 180, 0.2)`;
         ctx.fillText(text, 0, 0);
         ctx.restore();
 
-        // Velocidad rápida
-        drops[i] += Math.floor(Math.random() * 2) + 2;
-
-        // Reinicio de columna
-        if (y > height && Math.random() > 0.975) {
+        if (y > canvas.height || Math.random() > 0.975) {
           drops[i] = 0;
+        } else {
+          drops[i]++;
         }
       }
     }
 
-    setInterval(draw, 30); // Más velocidad
+    setInterval(draw, 50);
 
-    window.addEventListener("resize", () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    // Efecto al tocar pantalla
+    window.addEventListener('click', (e) => {
+      for (let i = 0; i < 20; i++) {
+        createFallingTeAmo(e.clientX, e.clientY);
+      }
     });
 
-    // Al tocar la pantalla, agregar más columnas activas
-    window.addEventListener("click", (e) => {
-      const newColumns = 10;
-      for (let i = 0; i < newColumns; i++) {
-        const x = Math.floor((e.clientX + (Math.random() * 100 - 50)) / fontSize);
-        if (x >= 0 && x < columns) {
-          drops[x] = 0;
+    const particles = [];
+
+    function createFallingTeAmo(x, y) {
+      particles.push({
+        x,
+        y,
+        text: "TE AMO",
+        size: Math.random() * 20 + 10,
+        brightness: Math.random() * 1 + 0.5,
+        velocityY: Math.random() * 3 + 2,
+        life: 100
+      });
+    }
+
+    function drawParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        ctx.font = `${p.size}px sans-serif`;
+        ctx.fillStyle = `rgba(255, 105, 180, ${p.brightness})`;
+        ctx.fillText(p.text, p.x, p.y);
+
+        // Reflejo
+        ctx.save();
+        ctx.translate(p.x, p.y + p.size * 2);
+        ctx.scale(1, -1);
+        ctx.fillStyle = `rgba(255, 105, 180, 0.2)`;
+        ctx.fillText(p.text, 0, 0);
+        ctx.restore();
+
+        p.y += p.velocityY;
+        p.life--;
+        if (p.life <= 0) {
+          particles.splice(i, 1);
         }
       }
+    }
+
+    function animate() {
+      draw();
+      drawParticles();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
   </script>
 </body>
