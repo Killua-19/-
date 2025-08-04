@@ -1,176 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>💗MI PEQUEÑITA💗</title>
-<style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-    background-color: #000;
-    font-family: 'Arial Black', Arial, sans-serif;
-    color: white;
-    position: relative;
-  }
-
-  #center-text {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3.2rem; /* más pequeño que antes */
-    color: white;
-    font-weight: 900;
-    text-shadow:
-      0 0 10px #fff,
-      0 0 20px #ff69b4,
-      0 0 30px #ff1493,
-      0 0 40px #ff1493,
-      0 0 50px #ff69b4,
-      0 0 60px #ff1493,
-      0 0 70px #ff69b4;
-    user-select: none;
-    white-space: nowrap;
-    z-index: 10;
-  }
-
-  #falling-container {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    overflow: hidden;
-    top: 0; left: 0;
-    z-index: 5;
-  }
-
-  .teamo {
-    position: absolute;
-    color: #ff1493;
-    font-weight: 900;
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    text-shadow:
-      0 0 5px #ff69b4,
-      0 0 10px #ff1493,
-      0 0 15px #ff69b4,
-      0 0 20px #ff1493;
-    user-select: none;
-    white-space: nowrap;
-  }
-
-  .teamo::after {
-    content: attr(data-text);
-    position: absolute;
-    left: 0;
-    top: 100%;
-    transform: scaleY(-1);
-    color: #ff69b4;
-    opacity: 0.25;
-    filter: blur(1px);
-    text-shadow: none;
-  }
-
-  /* Contenedor para cinnamon rolls */
-  #cinnamon-container {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 40px;
-    z-index: 10;
-  }
-
-  /* Cada cinnamon roll (sticker/gif) */
-  .cinnamon-roll {
-    width: 100px;
-    animation: floatSideways 6s ease-in-out infinite;
-    user-select: none;
-  }
-
-  /* Para que los dos stickers animen con un delay diferente */
-  .cinnamon-roll:nth-child(2) {
-    animation-delay: 3s;
-  }
-
-  @keyframes floatSideways {
-    0%, 100% {
-      transform: translateX(0) translateY(0);
+  <meta charset="UTF-8">
+  <title>Te Amo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      touch-action: manipulation;
     }
-    50% {
-      transform: translateX(20px) translateY(-10px);
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
-  }
-</style>
+
+    .emoji {
+      position: absolute;
+      bottom: 10%;
+      width: 100%;
+      text-align: center;
+      font-size: 2.5em;
+      color: #ff69b4;
+      text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4;
+      pointer-events: none;
+      user-select: none;
+      z-index: 2;
+    }
+  </style>
 </head>
 <body>
+  <canvas id="matrix"></canvas>
+  <div class="emoji">💗MI PRQUEÑITA💗</div>
 
-<div id="falling-container"></div>
+  <script>
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-<div id="center-text">💗MI PEQUEÑITA💗</div>
+    // Pantalla completa
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-<div id="cinnamon-container">
-  <img class="cinnamon-roll" src="https://media.giphy.com/media/26xBwdIuRJiAiSwHy/giphy.gif" alt="Cinnamon Roll Sticker 1" />
-  <img class="cinnamon-roll" src="https://media.giphy.com/media/3ohs7YsT03y3jGzxCU/giphy.gif" alt="Cinnamon Roll Sticker 2" />
-</div>
+    const text = "TE AMO";
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
-<script>
-  const container = document.getElementById('falling-container');
-  const textos = [];
-  const cantidad = 50;
+    function draw() {
+      // Fondo negro semitransparente para efecto estela
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+      ctx.font = `${fontSize}px monospace`;
+      ctx.fillStyle = "#ff69b4"; // rosa neón
+      ctx.shadowColor = "#ff69b4";
+      ctx.shadowBlur = 10;
 
-  for(let i=0; i<cantidad; i++) {
-    const span = document.createElement('span');
-    span.classList.add('teamo');
-    span.setAttribute('data-text', 'TE AMO');
-    span.textContent = 'TE AMO';
-    span.style.left = Math.random() * viewportWidth + 'px';
-    span.style.top = (Math.random() * -viewportHeight) + 'px';
+      for (let i = 0; i < drops.length; i++) {
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-    const size = 1.2 + Math.random() * 1.8;
-    span.style.fontSize = (size * 1.8) + 'rem';
+        ctx.fillText(text, x, y);
 
-    const speed = 0.5 + (2 - size) * 1.5;
+        // reiniciar
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
 
-    container.appendChild(span);
-
-    textos.push({
-      element: span,
-      speed: speed,
-      size: size,
-      x: parseFloat(span.style.left),
-      y: parseFloat(span.style.top),
-    });
-  }
-
-  function animar() {
-    textos.forEach(obj => {
-      obj.y += obj.speed;
-      if (obj.y > viewportHeight) {
-        obj.y = -30 - Math.random()*100;
-        obj.x = Math.random() * viewportWidth;
-        obj.element.style.left = obj.x + 'px';
+        drops[i]++;
       }
-      obj.element.style.top = obj.y + 'px';
-    });
-    requestAnimationFrame(animar);
-  }
-  animar();
 
-  window.addEventListener('resize', () => {
-    textos.forEach(obj => {
-      obj.x = Math.random() * window.innerWidth;
-      obj.element.style.left = obj.x + 'px';
-    });
-  });
-</script>
+      requestAnimationFrame(draw);
+    }
 
+    draw();
+
+    // Lluvia personalizada al tocar
+    window.addEventListener("pointerdown", function (e) {
+      const x = e.clientX;
+      const y = e.clientY;
+      const count = 30;
+
+      for (let i = 0; i < count; i++) {
+        createFallingText(x, y);
+      }
+    });
+
+    function createFallingText(startX, startY) {
+      const span = document.createElement("span");
+      span.textContent = text;
+      span.style.position = "absolute";
+      span.style.left = `${startX}px`;
+      span.style.top = `${startY}px`;
+      span.style.color = "#ff69b4";
+      span.style.fontSize = "16px";
+      span.style.fontFamily = "monospace";
+      span.style.textShadow = "0 0 10px #ff69b4, 0 0 20px #ff69b4";
+      span.style.pointerEvents = "none";
+      span.style.userSelect = "none";
+
+      document.body.appendChild(span);
+
+      let y = startY;
+      let opacity = 1;
+
+      function fall() {
+        y += Math.random() * 4 + 2;
+        opacity -= 0.01;
+        span.style.top = `${y}px`;
+        span.style.opacity = opacity;
+        if (opacity > 0) {
+          requestAnimationFrame(fall);
+        } else {
+          span.remove();
+        }
+      }
+
+      fall();
+    }
+
+    // Adaptar tamaño al redimensionar
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
