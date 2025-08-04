@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Te Amo</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
       background: black;
       overflow: hidden;
-      height: 100%;
-      touch-action: manipulation;
+      font-family: 'Arial', sans-serif;
     }
 
     canvas {
@@ -19,114 +18,74 @@
       left: 0;
     }
 
-    .emoji {
+    #center-text {
       position: absolute;
-      bottom: 10%;
-      width: 100%;
-      text-align: center;
-      font-size: 2.5em;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       color: #ff69b4;
-      text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4;
-      pointer-events: none;
-      user-select: none;
-      z-index: 2;
+      font-size: 3em;
+      text-shadow: 
+        0 0 5px #ff69b4, 
+        0 0 10px #ff69b4, 
+        0 0 20px #ff69b4,
+        0 0 40px #ff69b4;
+      z-index: 1;
+      text-align: center;
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <div class="emoji">💗MI PRQUEÑITA💗</div>
+  <div id="center-text">💖✨ MI PEQUEÑITA ✨💖</div>
 
   <script>
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
 
-    // Pantalla completa
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const fontSize = 20;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).fill(1);
     const text = "TE AMO";
-    const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
 
     function draw() {
-      // Fondo negro semitransparente para efecto estela
       ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
-      ctx.fillStyle = "#ff69b4"; // rosa neón
+      ctx.fillStyle = "#ff69b4";
       ctx.shadowColor = "#ff69b4";
       ctx.shadowBlur = 10;
 
       for (let i = 0; i < drops.length; i++) {
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
+        const char = text[Math.floor(Math.random() * text.length)];
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
 
-        ctx.fillText(text, x, y);
-
-        // reiniciar
-        if (y > canvas.height && Math.random() > 0.975) {
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
-
         drops[i]++;
       }
-
-      requestAnimationFrame(draw);
     }
 
-    draw();
+    setInterval(draw, 50);
 
-    // Lluvia personalizada al tocar
-    window.addEventListener("pointerdown", function (e) {
-      const x = e.clientX;
-      const y = e.clientY;
-      const count = 30;
-
-      for (let i = 0; i < count; i++) {
-        createFallingText(x, y);
-      }
-    });
-
-    function createFallingText(startX, startY) {
-      const span = document.createElement("span");
-      span.textContent = text;
-      span.style.position = "absolute";
-      span.style.left = `${startX}px`;
-      span.style.top = `${startY}px`;
-      span.style.color = "#ff69b4";
-      span.style.fontSize = "16px";
-      span.style.fontFamily = "monospace";
-      span.style.textShadow = "0 0 10px #ff69b4, 0 0 20px #ff69b4";
-      span.style.pointerEvents = "none";
-      span.style.userSelect = "none";
-
-      document.body.appendChild(span);
-
-      let y = startY;
-      let opacity = 1;
-
-      function fall() {
-        y += Math.random() * 4 + 2;
-        opacity -= 0.01;
-        span.style.top = `${y}px`;
-        span.style.opacity = opacity;
-        if (opacity > 0) {
-          requestAnimationFrame(fall);
-        } else {
-          span.remove();
-        }
-      }
-
-      fall();
-    }
-
-    // Adaptar tamaño al redimensionar
-    window.addEventListener("resize", () => {
+    // Resize canvas if screen changes
+    window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     });
+
+    // Añadir más "TE AMO" al tocar
+    window.addEventListener('click', () => {
+      for (let i = 0; i < 20; i++) {
+        drops[Math.floor(Math.random() * drops.length)] = 0;
+      }
+    });
   </script>
 </body>
+</html>
