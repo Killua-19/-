@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>💗MI PEQUEÑITA💗</title>
 <style>
-  body, html {
+  html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    background: black;
     height: 100%;
-    background-color: #000;
-    font-family: 'Arial Black', Arial, sans-serif;
-    color: white;
-    position: relative;
   }
 
   #center-text {
@@ -21,9 +18,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.5rem; /* ✅ texto principal más pequeño */
+    font-size: 1.5rem;
     color: white;
-    font-weight: 900;
+    font-weight: bold;
     text-shadow:
       0 0 10px #fff,
       0 0 20px #ff69b4,
@@ -32,138 +29,99 @@
       0 0 50px #ff69b4,
       0 0 60px #ff1493,
       0 0 70px #ff69b4;
-    user-select: none;
-    white-space: nowrap;
     z-index: 10;
-  }
-
-  #falling-container {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
     pointer-events: none;
-    overflow: hidden;
-    top: 0; left: 0;
-    z-index: 5;
   }
 
-  .teamo {
+  canvas {
     position: absolute;
-    color: #ff1493;
-    font-weight: 900;
-    font-size: 1.8rem;
-    text-transform: uppercase;
-    text-shadow:
-      0 0 5px #ff69b4,
-      0 0 10px #ff1493,
-      0 0 15px #ff69b4,
-      0 0 20px #ff1493;
-    user-select: none;
-    white-space: nowrap;
-    animation: matrix-glow 0.6s infinite alternate;
-  }
-
-  .teamo::after {
-    content: attr(data-text);
-    position: absolute;
+    top: 0;
     left: 0;
-    top: 100%;
-    transform: scaleY(-1);
-    color: #ff69b4;
-    opacity: 0.25;
-    filter: blur(1px);
-    text-shadow: none;
-  }
-
-  @keyframes matrix-glow {
-    from {
-      opacity: 0.6;
-      text-shadow:
-        0 0 2px #ff69b4,
-        0 0 4px #ff1493;
-    }
-    to {
-      opacity: 1;
-      text-shadow:
-        0 0 6px #ff69b4,
-        0 0 12px #ff1493;
-    }
+    display: block;
+    z-index: 1;
   }
 </style>
 </head>
 <body>
 
-<div id="falling-container"></div>
-
+<canvas id="canvas"></canvas>
 <div id="center-text">💗MI PEQUEÑITA💗</div>
 
 <script>
-  const container = document.getElementById('falling-container');
-  const textos = [];
-  const cantidad = 50;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
 
-  let viewportWidth = window.innerWidth;
-  let viewportHeight = window.innerHeight;
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
 
-  function crearTexto(x = Math.random() * viewportWidth, y = Math.random() * -viewportHeight) {
-    const span = document.createElement('span');
-    span.classList.add('teamo');
-    span.setAttribute('data-text', 'TE AMO');
-    span.textContent = 'TE AMO';
-    span.style.left = x + 'px';
-    span.style.top = y + 'px';
+  const fontSize = 18;
+  const columns = Math.floor(width / fontSize);
+  const drops = Array(columns).fill(0);
 
-    const size = 1.2 + Math.random() * 1.8;
-    span.style.fontSize = (size * 1.8) + 'rem';
+  const chars = Array(columns).fill("TE AMO");
 
-    const speed = 0.5 + (2 - size) * 1.5;
+  function draw() {
+    // Fondo semitransparente para efecto de desvanecimiento
+    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    ctx.fillRect(0, 0, width, height);
 
-    container.appendChild(span);
+    ctx.font = fontSize + "px 'Arial Black'";
+    for (let i = 0; i < drops.length; i++) {
+      const text = "TE AMO";
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
 
-    textos.push({
-      element: span,
-      speed: speed,
-      size: size,
-      x: x,
-      y: y,
-    });
-  }
+      const opacity = Math.random() * 0.7 + 0.3;
+      const scale = Math.random() * 0.3 + 1;
 
-  for (let i = 0; i < cantidad; i++) {
-    crearTexto();
-  }
+      ctx.fillStyle = `rgba(255, 105, 180, ${opacity})`;
+      ctx.shadowColor = '#ff1493';
+      ctx.shadowBlur = 10;
 
-  function animar() {
-    textos.forEach(obj => {
-      obj.y += obj.speed;
-      if (obj.y > viewportHeight) {
-        obj.y = -30 - Math.random() * 100;
-        obj.x = Math.random() * viewportWidth;
-        obj.element.style.left = obj.x + 'px';
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, 1);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+
+      // Reflejo invertido como "rastro"
+      ctx.save();
+      ctx.translate(x, y + fontSize);
+      ctx.scale(scale, -1);
+      ctx.globalAlpha = 0.2;
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+
+      // Rastro extra tipo Matrix
+      for (let j = 1; j < 5; j++) {
+        ctx.save();
+        ctx.translate(x, y - j * fontSize);
+        ctx.globalAlpha = (0.1 * (5 - j));
+        ctx.fillStyle = '#ff69b4';
+        ctx.fillText(text, 0, 0);
+        ctx.restore();
       }
-      obj.element.style.top = obj.y + 'px';
-    });
-    requestAnimationFrame(animar);
+
+      drops[i] += Math.floor(Math.random() * 2) + 1;
+
+      if (y > height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+    }
   }
 
-  animar();
+  setInterval(draw, 33);
 
   window.addEventListener('resize', () => {
-    viewportWidth = window.innerWidth;
-    viewportHeight = window.innerHeight;
-    textos.forEach(obj => {
-      obj.x = Math.random() * viewportWidth;
-      obj.element.style.left = obj.x + 'px';
-    });
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
   });
 
-  // ✅ Al tocar la pantalla: aparecen muchos "TE AMO"
+  // Efecto al tocar: muchos "TE AMO" en la zona tocada
   window.addEventListener('click', e => {
     for (let i = 0; i < 20; i++) {
-      crearTexto(
-        e.clientX + (Math.random() * 100 - 50),
-        e.clientY + (Math.random() * 100 - 50)
-      );
+      const x = Math.floor((e.clientX + (Math.random() * 100 - 50)) / fontSize);
+      drops[x] = 0;
     }
   });
 </script>
