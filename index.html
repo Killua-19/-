@@ -10,7 +10,7 @@
     padding: 0;
     overflow: hidden;
     height: 100%;
-    background-color: #000; /* fondo negro fijo */
+    background-color: #000;
     font-family: 'Arial Black', Arial, sans-serif;
   }
 
@@ -19,7 +19,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.3rem; /* más pequeño */
+    font-size: clamp(1.1rem, 4.5vw, 2.2rem);
     font-weight: 900;
     color: #fff;
     text-shadow:
@@ -27,17 +27,21 @@
       0 0 20px #fff,
       0 0 40px #fff,
       0 0 60px #fff,
-      0 0 80px #fff;
+      0 0 80px #fff,
+      0 0 100px #fff;
     animation: pulse 2s ease-in-out infinite;
     user-select: none;
     white-space: nowrap;
     z-index: 10;
     text-align: center;
+    max-width: 95vw;
+    padding: 0 10px;
+    box-sizing: border-box;
   }
 
   @keyframes pulse {
     0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.1); }
+    50% { transform: translate(-50%, -50%) scale(1.08); }
   }
 
   canvas {
@@ -51,7 +55,7 @@
 </head>
 <body>
 
-<div id="center-text">no olvides lo importante que eres✨</div>
+<div id="center-text">✨ no olvides lo importante que eres ✨</div>
 <canvas id="matrix"></canvas>
 
 <script>
@@ -61,34 +65,30 @@
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const palabra = "🪼"; 
-  const fontSize = 20; 
-  const columns = Math.floor(canvas.width / (fontSize * 4)); 
-  const drops = Array(columns).fill(1);
+  const emojis = ["🪼", "✨", "🌟", "💫", "🪼", "⭐", "🌊"];
+  const fontSize = 22;
+  let columns = Math.floor(canvas.width / (fontSize * 3.2));
+  let drops = Array(columns).fill(1);
 
-  // Partículas de explosión
   const explosiones = [];
 
   function draw() {
-    // Fondo negro translúcido (mantiene estela Matrix)
-    ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.12)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.font = fontSize + "px Arial Black";
     ctx.shadowColor = "#fff";
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 10;
 
-    // Lluvia Matrix de "🪼"
     for (let i = 0; i < drops.length; i++) {
-      const text = palabra;
+      const text = emojis[Math.floor(Math.random() * emojis.length)];
 
       ctx.fillStyle = "rgba(255,255,255,1)";
-      ctx.fillText(text, i * fontSize * 4, drops[i] * fontSize);
+      ctx.fillText(text, i * fontSize * 3.2, drops[i] * fontSize);
 
-      // efecto de rastro
-      for (let j = 1; j < 10; j++) {
-        ctx.fillStyle = `rgba(255,255,255,${1 - j * 0.1})`;
-        ctx.fillText(text, i * fontSize * 4, (drops[i] - j) * fontSize);
+      for (let j = 1; j < 8; j++) {
+        ctx.fillStyle = `rgba(255,255,255,${1 - j * 0.12})`;
+        ctx.fillText(text, i * fontSize * 3.2, (drops[i] - j) * fontSize);
       }
 
       drops[i]++;
@@ -98,35 +98,35 @@
       }
     }
 
-    // Explosiones
-    explosiones.forEach((exp, idx) => {
-      ctx.font = "18px Arial Black";
+    for (let idx = explosiones.length - 1; idx >= 0; idx--) {
+      const exp = explosiones[idx];
+      ctx.font = "20px Arial Black";
       ctx.shadowColor = "#fff";
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = `rgba(255,255,255,${exp.life/50})`;
-      ctx.fillText("🪼", exp.x, exp.y);
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = `rgba(255,255,255,${exp.life / 50})`;
+      ctx.fillText(exp.emoji, exp.x, exp.y);
 
       exp.x += exp.dx;
       exp.y += exp.dy;
       exp.life--;
 
       if (exp.life <= 0) explosiones.splice(idx, 1);
-    });
+    }
+
+    requestAnimationFrame(draw);
   }
 
-  setInterval(draw, 50);
-
-  // Explosión al tocar
   function explosion(x, y) {
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 14; i++) {
       const angle = Math.random() * 2 * Math.PI;
-      const velocity = 3 + Math.random() * 5;
+      const velocity = 2.5 + Math.random() * 5.5;
       explosiones.push({
         x: x,
         y: y,
         dx: Math.cos(angle) * velocity,
         dy: Math.sin(angle) * velocity,
-        life: 50
+        life: 50,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)]
       });
     }
   }
@@ -140,11 +140,14 @@
     explosion(touch.clientX, touch.clientY);
   });
 
-  // Ajustar canvas al cambiar ventana
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    columns = Math.floor(canvas.width / (fontSize * 3.2));
+    drops = Array(columns).fill(1);
   });
+
+  requestAnimationFrame(draw);
 </script>
 
 </body>
